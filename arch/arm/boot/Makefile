@@ -41,6 +41,7 @@ else
 DTB_LIST := $(dtb-y)
 endif
 DTB_OBJS := $(addprefix $(obj)/dts/,$(DTB_LIST))
+DTS_TARGET := $(patsubst "%",%,$(call CONFIG_DTS_TARGET,$(1)))
 
 ifeq ($(CONFIG_XIP_KERNEL),y)
 
@@ -75,6 +76,16 @@ $(obj)/zImage-dtb:	$(obj)/zImage $(DTB_OBJS) FORCE
 	@echo '  Kernel: $@ is ready'
 
 endif
+
+targets += $(DTB_LIST)
+
+# Rule to build device tree blobs
+$(obj)/%.dtb: $(src)/dts/$(DTS_TARGET)/%.dts FORCE
+	$(call if_changed_dep,dtc)
+
+$(obj)/dtbs: $(DTB_OBJS)
+
+clean-files := *.dtb
 
 ifneq ($(LOADADDR),)
   UIMAGE_LOADADDR=$(LOADADDR)
