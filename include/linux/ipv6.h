@@ -29,6 +29,9 @@ struct ipv6_devconf {
 	__s32		max_addresses;
 	__s32		accept_ra_defrtr;
 	__s32		accept_ra_pinfo;
+#ifdef CONFIG_LGE_DHCPV6_WIFI
+	__s32		ra_info_flag;
+#endif
 #ifdef CONFIG_IPV6_ROUTER_PREF
 	__s32		accept_ra_rtr_pref;
 	__s32		rtr_probe_interval;
@@ -51,7 +54,6 @@ struct ipv6_devconf {
 	__s32           ndisc_notify;
 	__s32		accept_ra_prefix_route;
 	__s32		accept_ra_mtu;
-	__s32		use_oif_addrs_only;
 	void		*sysctl;
 };
 
@@ -274,9 +276,9 @@ static inline struct inet6_timewait_sock *inet6_twsk(const struct sock *sk)
 }
 
 #if IS_ENABLED(CONFIG_IPV6)
-static inline struct ipv6_pinfo *inet6_sk(const struct sock *__sk)
+static inline struct ipv6_pinfo * inet6_sk(const struct sock *__sk)
 {
-	return sk_fullsock(__sk) ? inet_sk(__sk)->pinet6 : NULL;
+	return inet_sk(__sk)->pinet6;
 }
 
 static inline struct inet6_request_sock *
